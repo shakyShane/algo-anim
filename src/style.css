@@ -43,7 +43,7 @@ body {
 }
 .cell-absolute {
   position: absolute;
-  transform: translateX(0px)
+  transform: translateX(30px)
 }
 
 .stagger, .pointer {

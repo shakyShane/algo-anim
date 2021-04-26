@@ -28,6 +28,7 @@ function pointer(inputs: Val[]) {
     )
     .to('.pointer', {opacity: 1, visibility: 'visible', duration: DURATION})
     .addLabel('pointer-shown')
+  // timeline.fromTo('#input-0', {translateY: 100}, {translateY: 0})
   inputs.forEach((val, index) => {
     timeline
       .to('.pointer', {
@@ -38,32 +39,50 @@ function pointer(inputs: Val[]) {
           onStart: updateIndex(val),
         },
       )
-      .call(popStack(val))
       .addLabel(`index-${val.index}`)
-    val.ops.forEach((op) => {
+    const op = val.ops[0];
+    const len = val.stack.length;
+    const nextX = val.stack.length === 0
+      ? 30
+      : len * 40 + len * 4 + 35;
+    if (op.name === "push") {
       timeline.to(stackRHSELem, {
-        translateX: val.stack.length > 0 ? val.stack.length * 40 + val.stack.length * 4 + 35 : 0,
-        delay: op.name === "pop" ? DURATION : 0,
-        duration: DURATION,
-        onComplete: () => {
-          updateStack(val)
+        translateX: nextX,
+        duration: DURATION
+      })
+      timeline.call(updateStack(val));
+      timeline.to('.pointer', {duration: DURATION})
+    }
+    if (op.name === "pop") {
+      timeline.call(popStack(val));
+      timeline.to('.pointer', {duration: DURATION})
+      timeline.to(stackRHSELem, {
+        translateX: nextX,
+        duration: DURATION
+      })
+    }
+  })
+
+  function updateStack(val: Val) {
+    return () => {
+      val.ops.forEach(op => {
+        if (op.name === "push") {
+          if (op.value) {
+            const elem = appendStack(val, op);
+            stack.fromTo(elem, {scale: SCALE_IN, duration: DURATION}, {
+              scale: 1, onComplete: () => {
+                console.log('fade-in, done');
+              }
+            })
+          }
         }
       })
-    })
-  })
+    }
+  }
+
   return timeline;
 }
 
-function updateStack(val: Val) {
-  val.ops.forEach(op => {
-    if (op.name === "push") {
-      if (op.value) {
-        const elem = appendStack(op.value)
-        stack.fromTo(elem, {scale: SCALE_IN}, {scale: 1})
-      }
-    }
-  })
-}
 
 function updateIndex(val: Val) {
   return function () {
@@ -76,9 +95,10 @@ if (!stackElem) throw new Error('missing container')
 if (!stackRHSELem) throw new Error('missing stack container')
 const indexI = document.querySelector('[data-var-i]');
 
-function appendStack(val: string) {
+function appendStack(val: Val, op: Op) {
   const elem = document.createElement('span');
-  elem.textContent = val;
+  elem.textContent = op.value || "n/a";
+  elem.id = `input-${val.index}`;
   elem.classList.add('cell')
   elem.classList.add('cell-3d')
   elem.classList.add('char')
@@ -125,15 +145,3 @@ window.__restart = function () {
   clearStack();
   updateI(0)
 }
-// timeline.to('.marker', {translateY: 100}, 'index-2')
-
-
-// function tick() {
-//   ticked+
-// }
-// .to('.arrow', {
-//   keyframes: [
-//     { translateX: 10, ease: 'al' },
-//     { translateX: -10,ease: Sine.easeInOut },
-//   ]
-// })
