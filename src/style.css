@@ -1,0 +1,79 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  background: #688de4;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+#app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.row {
+  display: flex;
+  position: relative;
+}
+.inline-array {
+  display: flex;
+}
+
+.block {
+  margin-top: 10px;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.cell + .cell {
+  margin-left: 4px;
+}
+.cell-3d {
+  border: 2px solid white;
+  border-radius: 3px;
+  box-shadow: 3px 3px 3px #2f52a3;
+}
+.cell-absolute {
+  position: absolute;
+  transform: translateX(0px)
+}
+
+.stagger, .pointer {
+  visibility: hidden;
+}
+
+.pointer {
+  opacity: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.arrow {
+  height: 25px;
+  /*border: 1px solid red;*/
+}
+.var {
+  font-size: 12px;
+}
+.label {
+  margin-bottom: 10px;
+}
+.marker {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

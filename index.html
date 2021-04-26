@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app">
+
+      <p class="label">Stack:</p>
+      <div class="row">
+        <span class="cell">[</span>
+        <div class="inline-array"></div>
+        <span class="cell cell-absolute" data-stack-rhs>]</span>
+      </div>
+      <p class="label">Input:</p>
+      <div class="row">
+        <span class="cell cell-3d" data-cell><span class="char">(</span></span>
+        <span class="cell cell-3d" data-cell><span class="char">(</span></span>
+        <span class="cell cell-3d" data-cell><span class="char">)</span></span>
+        <span class="cell cell-3d" data-cell><span class="char">)</span></span>
+      </div>
+      <div class="pointer block">
+        <span class="arrow">^</span>
+        <span class="var" data-var-i>i = 0</span>
+      </div>
+      <p>
+        <button type="submit" onClick="__play()">Play</button>
+        <button type="submit" onClick="__pause()">Pause</button>
+        <button type="submit" onClick="__restart()">Restart</button>
+      </p>
+<!--      <svg viewbox="0 0 450 100" style="border: 1px solid red">-->
+<!--        <path fill="none" stroke="black" class="arrow" d="-->
+<!--            M 0 76-->
+<!--            v 20-->
+<!--            m -8 -12-->
+<!--            l 8 -8, 8 8-->
+<!--        "/>-->
+<!--      </svg>-->
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
