@@ -2,6 +2,13 @@ import './style.css'
 import {gsap} from "gsap"
 
 const stackRHSELem = document.querySelector('[data-stack-rhs]')!;
+const elems = {
+  POINTER: '[data-pointer]'
+}
+const colors = {
+  SELECTED: '#aed049',
+  DEFAULT: '#ffffff'
+}
 
 const master = gsap.timeline();
 const stack = gsap.timeline();
@@ -23,44 +30,46 @@ function pointer(inputs: Val[]) {
     .set('[data-cell]', {visibility: 'visible'})
     .fromTo(
       '[data-cell]',
-      {opacity: 0, translateY: -10},
+      {opacity: 0, translateY: 10},
       {duration: 1, opacity: 1, translateY: 0, stagger: 0.1, ease: 'elastic(1, 0.3)'}
     )
-    .to('.pointer', {opacity: 1, visibility: 'visible', duration: DURATION})
-    .addLabel('pointer-shown')
-  // timeline.fromTo('#input-0', {translateY: 100}, {translateY: 0})
+    .set(elems.POINTER, {opacity: 1, visibility: 'visible'})
+    .fromTo(elems.POINTER, {scale: 0, duration: DURATION}, {scale:1, duration: DURATION})
   inputs.forEach((val, index) => {
     timeline
-      .to('.pointer', {
-          translateX: val.index * 40 + val.index * 4,
+      .to(elems.POINTER, {
+          translateX: val.index * 40,
           duration: DURATION,
           delay: index > 0 ? DURATION : 0,
           ease: 'release',
           onStart: updateIndex(val),
         },
       )
-      .addLabel(`index-${val.index}`)
+      .to(`[data-cell]:nth-child(${index+1})`, {color: colors.SELECTED, scale: 1.5, duration: DURATION*1.5})
+      .to(`[data-cell]:nth-child(${index+1})`, {color: colors.DEFAULT, scale: 1, duration: DURATION*1.5})
+
     const op = val.ops[0];
     const len = val.stack.length;
     const nextX = val.stack.length === 0
       ? 30
-      : len * 40 + len * 4 + 35;
-    if (op.name === "push") {
-      timeline.to(stackRHSELem, {
-        translateX: nextX,
-        duration: DURATION
-      })
-      timeline.call(updateStack(val));
-      timeline.to('.pointer', {duration: DURATION})
-    }
-    if (op.name === "pop") {
-      timeline.call(popStack(val));
-      timeline.to('.pointer', {duration: DURATION})
-      timeline.to(stackRHSELem, {
-        translateX: nextX,
-        duration: DURATION
-      })
-    }
+      : len * 38;
+    console.log(nextX);
+    // if (op.name === "push") {
+    //   timeline.to(stackRHSELem, {
+    //     translateX: nextX,
+    //     duration: DURATION
+    //   })
+    //   timeline.call(updateStack(val));
+    //   timeline.to('.pointer', {duration: DURATION}) // todo: how to prevent this pause?
+    // }
+    // if (op.name === "pop") {
+    //   timeline.call(popStack(val));
+    //   timeline.to('.pointer', {duration: DURATION}) // todo: how to prevent this pause?
+    //   timeline.to(stackRHSELem, {
+    //     translateX: nextX,
+    //     duration: DURATION
+    //   })
+    // }
   })
 
   function updateStack(val: Val) {

@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 body {
-  background: #688de4;
+  background: #223053;
   color: white;
   font-weight: bold;
   font-size: 24px;
@@ -22,7 +22,7 @@ body {
 }
 
 .block {
-  margin-top: 10px;
+  /*margin-top: 10px;*/
 }
 
 .cell {
@@ -34,12 +34,22 @@ body {
   text-align: center;
 }
 .cell + .cell {
-  margin-left: 4px;
+
+}
+.centered {
+  justify-content: center;
+}
+.centered-column {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .cell-3d {
-  border: 2px solid white;
-  border-radius: 3px;
-  box-shadow: 3px 3px 3px #2f52a3;
+  /*outline: 1px solid red;*/
+  /*border: 2px solid white;*/
+}
+.cell-3d + .cell-3d {
+  /*margin-left: -2px;*/
 }
 .cell-absolute {
   position: absolute;
@@ -50,18 +60,16 @@ body {
   visibility: hidden;
 }
 
-.pointer {
+.arrow {
+  visibility: hidden;
   opacity: 0;
+  display: inline-block;
   width: 40px;
   height: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
-
-.arrow {
-  height: 25px;
-  /*border: 1px solid red;*/
+.arrow-svg {
+  width: 40px;
+  height: 40px;
 }
 .var {
   font-size: 12px;
@@ -76,4 +84,15 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+[data-outline] {
+  border: 1px solid red;
+}
+[data-outline="white"] {
+  border: 1px solid white;
+}
+
+path[stroke-width] {
+  stroke: currentColor;
 }
