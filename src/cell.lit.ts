@@ -1,5 +1,6 @@
 import {customElement, property} from "lit/decorators.js";
 import {css, html, LitElement} from "lit";
+import {classMap} from 'lit/directives/class-map.js';
 
 
 @customElement('algo-cell')
@@ -13,6 +14,10 @@ export class Cell extends LitElement {
       justify-content: center;
       text-align: center;
     }
+    .cell-inert {
+      color: #747474;
+      font-size: 0.8em;
+    }
   `;
 
   /**
@@ -21,8 +26,16 @@ export class Cell extends LitElement {
   @property({type: Number})
   index: number = -1;
 
+  /**
+   * The stack to display
+   */
+  @property({type: String})
+  variant: "normal" | "inert" = "normal";
+
   render() {
-    return html`<span class="cell" data-stack-cell="${String(this.index)}">
+    const classes = {cell: true, "cell-inert": this.variant === "inert"}
+    console.log(classes);
+    return html`<span class=${classMap(classes)} data-stack-cell="${String(this.index)}">
         <span class="char"><slot></slot></span>
     </span>`
   }
@@ -30,11 +43,13 @@ export class Cell extends LitElement {
 
 export const name = "Cell";
 
-
 @customElement('algo-action')
 export class Action extends LitElement {
   static styles = css`
-    p {
+    :host {
+      //outline: 1px solid red;
+    }
+    .content {
       margin: 0 0;
       padding: 20px 0;
       font-size: 1rem;
@@ -48,6 +63,6 @@ export class Action extends LitElement {
   action: string | null = null;
 
   render() {
-    return html`<p><code>${this.action || ""}</code></p>`
+    return html`<div id="inner"><p class="content"><code>${this.action || ""}</code></p></div>`
   }
 }

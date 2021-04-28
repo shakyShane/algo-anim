@@ -54,7 +54,6 @@ function pointer(inputs: Val[]) {
           duration: DURATION,
           delay: index > 0 ? DURATION : 0,
           ease: 'release',
-          // onStart: updateIndex(val),
         },
       )
       .to(`[data-cell]:nth-child(${index + 1})`, {color: colors.SELECTED, scale: 1.5, duration: DURATION})
@@ -73,15 +72,9 @@ function pointer(inputs: Val[]) {
           }
         }
       })
-      .call(() => {
-        const stack = val.stack;
-        if (algoStack) {
-          algoStack.setStack(stack);
-        }
-      })
       .fromTo(algoAction, {
         scale: 0.8,
-        translateY: -10,
+        translateY: -20,
         opacity: 0,
         duration: DURATION
       }, {
@@ -92,11 +85,18 @@ function pointer(inputs: Val[]) {
       })
       .to(algoAction, {
         scale: 0.8,
-        translateY: 10,
+        translateY: 20,
         opacity: 0,
         duration: DURATION
       }, "+=1")
       .to(`[data-cell]:nth-child(${index + 1})`, {color: colors.DEFAULT, scale: 1, duration: DURATION})
+      .call(() => {
+        const stack = val.stack;
+        if (algoStack) {
+          algoStack.setStack(stack);
+        }
+      }, [], "-=1")
+
 
       // .call(() => {
       //   algoStack.setStack(val.stack);

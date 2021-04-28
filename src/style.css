@@ -21,6 +21,9 @@ body {
 .centered {
   justify-content: center;
 }
+.min-height {
+  height: 62px;
+}
 .centered-column {
   flex-direction: column;
   justify-content: center;
