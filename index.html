@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
-    <svg>
+    <svg display="none">
       <symbol id="arrow" viewBox="0 0 40 40">
         <path stroke-linejoin="round" stroke-linecap="round" stroke-width="4" fill="none" d="
             M 20 10
@@ -19,30 +19,30 @@
   </head>
   <body>
     <div id="app">
+<!--      <algo-controls></algo-controls>-->
       <div class="row centered-column">
         <div>
           <span class="arrow" data-pointer>
             <svg class="arrow-svg"><use href="#arrow"></use></svg>
           </span>
           <div class="row centered">
-            <span class="cell" data-cell><span class="char">(</span></span>
-            <span class="cell" data-cell><span class="char">)</span></span>
-            <span class="cell" data-cell><span class="char">(</span></span>
-            <span class="cell" data-cell><span class="char">)</span></span>
+            <algo-stack static id="algo-input">
+              <algo-cell data-cell>(</algo-cell>
+              <algo-cell data-cell>(</algo-cell>
+              <algo-cell data-cell>)</algo-cell>
+              <algo-cell data-cell>)</algo-cell>
+            </algo-stack>
           </div>
         </div>
       </div>
-      <div class="row">
-        <span class="cell">[</span>
-        <div class="inline-array">
-        </div>
-        <span class="cell cell-absolute" data-stack-rhs>]</span>
+      <div class="row centered">
+        <algo-action id="algo-action"></algo-action>
       </div>
-      <p>
-        <button type="submit" onClick="__play()">Play</button>
-        <button type="submit" onClick="__pause()">Pause</button>
-        <button type="submit" onClick="__restart()">Restart</button>
-      </p>
+<!--      <div class="row centered-column">-->
+<!--        <div class="row centered">-->
+<!--          <algo-stack id="algo-stack"></algo-stack>-->
+<!--        </div>-->
+<!--      </div>-->
 <!--      <svg viewbox="0 0 450 100" style="border: 1px solid red">-->
 <!--        <path fill="none" stroke="black" class="arrow" d="-->
 <!--            M 0 76-->

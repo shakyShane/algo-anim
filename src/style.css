@@ -17,25 +17,7 @@ body {
   display: flex;
   position: relative;
 }
-.inline-array {
-  display: flex;
-}
 
-.block {
-  /*margin-top: 10px;*/
-}
-
-.cell {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.cell + .cell {
-
-}
 .centered {
   justify-content: center;
 }
