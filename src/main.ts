@@ -7,12 +7,9 @@ import {Action} from "./cell.lit";
 
 console.log('register %O', name);
 
+const algoInput = document.getElementById('algo-input') as Stack;
 const algoStack = document.getElementById('algo-stack') as Stack;
 const algoAction = document.getElementById('algo-action') as Action;
-const stackRHSELem = document.querySelector('[data-stack-rhs]')!;
-const stackElem = document.querySelector('.inline-array')!;
-// if (!stackElem) throw new Error('missing container')
-// if (!stackRHSELem) throw new Error('missing stack container')
 const indexI = document.querySelector('[data-var-i]');
 const elems = {
   POINTER: '[data-pointer]'
@@ -25,7 +22,6 @@ const colors = {
 const master = gsap.timeline();
 const stackTimeline = gsap.timeline();
 const DURATION = 0.3;
-const SCALE_IN = 0.8;
 
 type Op = { name: "push" | "pop", value?: string }
 type Val = { index: number, ops: Op[], stack: string[] }
@@ -35,13 +31,15 @@ const values: Val[] = [
   {index: 2, stack: [')'], ops: [{name: 'pop'}]},
   {index: 3, stack: [], ops: [{name: 'pop'}]},
 ];
+const input = "(())";
 
 function pointer(inputs: Val[]) {
+  const cells = algoInput.cells();
   const timeline = gsap.timeline();
   timeline
-    .set('[data-cell]', {visibility: 'visible'})
+    .set(cells, {visibility: 'visible'})
     .fromTo(
-      '[data-cell]',
+      cells,
       {opacity: 0, translateY: 10},
       {duration: 1, opacity: 1, translateY: 0, stagger: 0.1, ease: 'elastic(1, 0.3)'}
     )
@@ -58,7 +56,7 @@ function pointer(inputs: Val[]) {
           ease: 'release',
         },
       )
-      .to(`[data-cell]:nth-child(${index + 1})`, {color: colors.SELECTED, scale: 1.5, duration: DURATION})
+      .to(cells[index], {color: colors.SELECTED, scale: 1.5, duration: DURATION})
       .call(() => {
         const op = val.ops[0];
         if (!op) return;
@@ -92,7 +90,7 @@ function pointer(inputs: Val[]) {
         opacity: 0,
         duration: DURATION
       }, "+=1")
-      .to(`[data-cell]:nth-child(${index + 1})`, {color: colors.DEFAULT, scale: 1, duration: DURATION})
+      .to(cells[index], {color: colors.DEFAULT, scale: 1, duration: DURATION})
 
     timeline
       .call(() => {
@@ -101,9 +99,10 @@ function pointer(inputs: Val[]) {
           algoStack.setStack(stack);
         }
         if (op.name === "pop") {
-          const last = algoStack.lastCellSpan();
+          const lastCell = algoStack.lastCell();
+          // const last = algoStack.lastCellSpan();
           stackTimeline
-            .to(last!, {opacity: 0, scale: 0, duration: DURATION})
+            .to(lastCell!, {opacity: 0, scale: 0, duration: DURATION})
             .call(() => {
               algoStack.setStack(stack);
             })
@@ -113,52 +112,11 @@ function pointer(inputs: Val[]) {
 
     timeline
       .call(() => {
-        const last = algoStack.lastCellSpan();
+        const last = algoStack.lastCell();
         if (last && op.name === "push") {
           stackTimeline.fromTo(last!, {opacity: 0, scale: 0, duration: DURATION}, {opacity: 1, scale: 1, duration: DURATION});
         }
       }, [], "after-action-in-=1")
-    // .call(() => {
-    //   const cells = algoStack.shadowRoot?.querySelectorAll("algo-cell");
-    //   if (cells && cells.length > 0) {
-    //     const cell = cells[cells.length-1];
-    //     if (cell) {
-    //       const inner = cell.shadowRoot?.querySelector(".cell");
-    //       // console.log(inner);
-    //       stack.fromTo(inner!, {opacity: 0, scale: 0, duration: DURATION}, {opacity: 1, scale: 1, duration: DURATION});
-    //     }
-    //     // console.log(cell);
-    //     // console.log(algoStack.shadowRoot?.querySelectorAll("algo-cell"));
-    //   }
-    // }, [], )
-
-
-    // .call(() => {
-    //   algoStack.setStack(val.stack);
-    // })
-
-    // const op = val.ops[0];
-    // const len = val.stack.length;
-    // const nextX = val.stack.length === 0
-    //   ? 30
-    //   : len * 38;
-    // console.log(nextX);
-    // if (op.name === "push") {
-    //   timeline.to(stackRHSELem, {
-    //     translateX: nextX,
-    //     duration: DURATION
-    //   })
-    //   timeline.call(updateStack(val));
-    //   timeline.to('.pointer', {duration: DURATION}) // todo: how to prevent this pause?
-    // }
-    // if (op.name === "pop") {
-    //   timeline.call(popStack(val));
-    //   timeline.to('.pointer', {duration: DURATION}) // todo: how to prevent this pause?
-    //   timeline.to(stackRHSELem, {
-    //     translateX: nextX,
-    //     duration: DURATION
-    //   })
-    // }
   })
 
   return timeline;
@@ -170,8 +128,12 @@ function updateI(num: number | string) {
   }
 }
 
-master
-  .add(pointer(values))
+algoInput.stack = input.split('');
+setTimeout(() => {
+  master
+    .add(pointer(values))
+}, 0);
+
 
 window.__pause = function () {
   master.pause()

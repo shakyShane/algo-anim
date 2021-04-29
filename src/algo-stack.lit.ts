@@ -11,6 +11,9 @@ export class Stack extends LitElement {
     .inline-array {
       display: flex;
     }
+    algo-cell {
+      opacity: 0;
+    }
   `;
 
   /**
@@ -56,6 +59,17 @@ export class Stack extends LitElement {
   }
 
   /**
+   * Update the underlying cells
+   */
+  lastCell(): HTMLElement | Element | undefined {
+    const cells = this.cells();
+    if (cells.length > 0) {
+      return cells[cells.length-1];
+    }
+    return undefined
+  }
+
+  /**
    * Output of this component
    */
   render() {
@@ -68,7 +82,7 @@ export class Stack extends LitElement {
     return html`
       <div class="inline-array" data-elem-stack>
           ${this.stack.map((val, index) => {
-            return html`<algo-cell index=${index} initiallyHidden>${val}</algo-cell>`
+            return html`<algo-cell index=${index}>${val}</algo-cell>`
         })}
       </div>`;
   }
