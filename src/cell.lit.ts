@@ -18,6 +18,9 @@ export class Cell extends LitElement {
       color: #747474;
       font-size: 0.8em;
     }
+    .cell-hidden {
+      opacity: 0;
+    }
   `;
 
   /**
@@ -32,9 +35,15 @@ export class Cell extends LitElement {
   @property({type: String})
   variant: "normal" | "inert" = "normal";
 
+  @property({type: Boolean})
+  initiallyHidden: boolean = false;
+
   render() {
-    const classes = {cell: true, "cell-inert": this.variant === "inert"}
-    console.log(classes);
+    const classes = {
+      cell: true,
+      "cell-inert": this.variant === "inert",
+      "cell-hidden": this.initiallyHidden,
+    }
     return html`<span class=${classMap(classes)} data-stack-cell="${String(this.index)}">
         <span class="char"><slot></slot></span>
     </span>`

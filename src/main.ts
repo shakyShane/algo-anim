@@ -4,6 +4,7 @@ import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
 import {Controls, name} from "./controls.lit";
 import {Action} from "./cell.lit";
+
 console.log('register %O', name);
 
 const algoStack = document.getElementById('algo-stack') as Stack;
@@ -22,7 +23,7 @@ const colors = {
 }
 
 const master = gsap.timeline();
-const stack = gsap.timeline();
+const stackTimeline = gsap.timeline();
 const DURATION = 0.3;
 const SCALE_IN = 0.8;
 
@@ -48,6 +49,7 @@ function pointer(inputs: Val[]) {
     .fromTo(elems.POINTER, {scale: 0, duration: DURATION}, {scale: 1, duration: DURATION})
 
   inputs.forEach((val, index) => {
+    const op = val.ops[0] as Op;
     timeline
       .to(elems.POINTER, {
           translateX: val.index * 40,
@@ -83,6 +85,7 @@ function pointer(inputs: Val[]) {
         opacity: 1,
         duration: DURATION,
       })
+      .addLabel("action-in")
       .to(algoAction, {
         scale: 0.8,
         translateY: 20,
@@ -90,17 +93,49 @@ function pointer(inputs: Val[]) {
         duration: DURATION
       }, "+=1")
       .to(`[data-cell]:nth-child(${index + 1})`, {color: colors.DEFAULT, scale: 1, duration: DURATION})
+
+    timeline
       .call(() => {
         const stack = val.stack;
-        if (algoStack) {
+        if (op.name === "push") {
           algoStack.setStack(stack);
         }
-      }, [], "-=1")
+        if (op.name === "pop") {
+          const last = algoStack.lastCellSpan();
+          stackTimeline
+            .to(last!, {opacity: 0, scale: 0, duration: DURATION})
+            .call(() => {
+              algoStack.setStack(stack);
+            })
+        }
+      }, [], "action-in+=0.2")
+      .addLabel('after-action-in')
+
+    timeline
+      .call(() => {
+        const last = algoStack.lastCellSpan();
+        if (last && op.name === "push") {
+          stackTimeline.fromTo(last!, {opacity: 0, scale: 0, duration: DURATION}, {opacity: 1, scale: 1, duration: DURATION});
+        }
+      }, [], "after-action-in-=1")
+    // .call(() => {
+    //   const cells = algoStack.shadowRoot?.querySelectorAll("algo-cell");
+    //   if (cells && cells.length > 0) {
+    //     const cell = cells[cells.length-1];
+    //     if (cell) {
+    //       const inner = cell.shadowRoot?.querySelector(".cell");
+    //       // console.log(inner);
+    //       stack.fromTo(inner!, {opacity: 0, scale: 0, duration: DURATION}, {opacity: 1, scale: 1, duration: DURATION});
+    //     }
+    //     // console.log(cell);
+    //     // console.log(algoStack.shadowRoot?.querySelectorAll("algo-cell"));
+    //   }
+    // }, [], )
 
 
-      // .call(() => {
-      //   algoStack.setStack(val.stack);
-      // })
+    // .call(() => {
+    //   algoStack.setStack(val.stack);
+    // })
 
     // const op = val.ops[0];
     // const len = val.stack.length;

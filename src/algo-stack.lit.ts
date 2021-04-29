@@ -34,6 +34,28 @@ export class Stack extends LitElement {
   }
 
   /**
+   * Update the underlying cells
+   */
+  cells(): HTMLElement[] {
+    return Array.from(this.shadowRoot?.querySelectorAll('algo-cell')!);
+  }
+
+  /**
+   * Update the underlying cells
+   */
+  lastCellSpan(): HTMLElement | Element | undefined {
+    const cells = this.cells();
+    if (cells.length > 0) {
+      const cell = cells[cells.length-1];
+      if (cell) {
+        const inner = cell.shadowRoot?.firstElementChild;
+        return inner || undefined
+      }
+    }
+    return undefined
+  }
+
+  /**
    * Output of this component
    */
   render() {
@@ -44,9 +66,11 @@ export class Stack extends LitElement {
           </div>`;
     }
     return html`
-        <div class="inline-array" data-elem-stack>
-            ${this.stack.map((val, index) => html`<algo-cell index=${index}>${val}</algo-cell>`)}
-        </div>`;
+      <div class="inline-array" data-elem-stack>
+          ${this.stack.map((val, index) => {
+            return html`<algo-cell index=${index} initiallyHidden>${val}</algo-cell>`
+        })}
+      </div>`;
   }
 }
 
