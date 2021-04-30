@@ -25,7 +25,7 @@ const master = gsap.timeline();
 const stackTimeline = gsap.timeline();
 const DURATION = 0.3;
 
-const input = "()[]{}";
+const input = "()[}]";
 const res = balanced(input);
 res.values.forEach(v => console.log(v));
 
@@ -59,8 +59,8 @@ function pointer(inputs: Val[]) {
         timeline.call(() => {
           const strings = val.ops.map(op => {
             switch (op.name) {
-              case "push": return `stack.push("${op.value}")`
-              case "pop": return `stack.pop()`
+              case "push": return `push("${op.value}")`
+              case "pop": return `pop()`
               case "cmp": return `${op.values.lhs} === ${op.values.rhs}`
             }
           }).join(', ');
@@ -118,7 +118,7 @@ function pointer(inputs: Val[]) {
   })
 
   timeline.call(() => {
-    algoAction.action = `result: ${res.result}`
+    algoAction.action = `balanced: ${res.result}`
   })
     .to(algoAction, {opacity: 1, translateY: 0, duration: DURATION})
 
@@ -131,3 +131,13 @@ setTimeout(() => {
   master
     .add(pointer(res.values))
 }, 0);
+
+window.__pause = function () {
+  master.pause()
+}
+window.__play = function () {
+  master.play()
+}
+window.__restart = function () {
+  master.restart()
+}
