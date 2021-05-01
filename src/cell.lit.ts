@@ -1,9 +1,8 @@
-import {customElement, property} from "lit/decorators.js";
-import {css, html, LitElement} from "lit";
-import {classMap} from 'lit/directives/class-map.js';
+import { customElement, property } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { classMap } from "lit/directives/class-map.js";
 
-
-@customElement('algo-cell')
+@customElement("algo-cell")
 export class Cell extends LitElement {
   static styles = css`
     .cell {
@@ -23,29 +22,32 @@ export class Cell extends LitElement {
   /**
    * The stack to display
    */
-  @property({type: Number})
+  @property({ type: Number })
   index: number = -1;
 
   /**
    * The stack to display
    */
-  @property({type: String})
+  @property({ type: String })
   variant: "normal" | "inert" = "normal";
 
   render() {
     const classes = {
       cell: true,
       "cell-inert": this.variant === "inert",
-    }
-    return html`<span class=${classMap(classes)} data-stack-cell="${String(this.index)}">
-        <span class="char"><slot></slot></span>
-    </span>`
+    };
+    return html`<span
+      class=${classMap(classes)}
+      data-stack-cell="${String(this.index)}"
+    >
+      <span class="char"><slot></slot></span>
+    </span>`;
   }
 }
 
 export const name = "Cell";
 
-@customElement('algo-action')
+@customElement("algo-action")
 export class Action extends LitElement {
   static styles = css`
     :host {
@@ -65,6 +67,8 @@ export class Action extends LitElement {
   action: string | null = null;
 
   render() {
-    return html`<div id="inner"><p class="content"><code>${this.action || ""}</code></p></div>`
+    return html`<div id="inner">
+      <p class="content"><code>${this.action || ""}</code></p>
+    </div>`;
   }
 }

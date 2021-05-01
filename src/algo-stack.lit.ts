@@ -1,12 +1,11 @@
-import {customElement, property} from "lit/decorators.js";
-import {css, html, LitElement} from "lit";
-import {name} from "./cell.lit";
+import { customElement, property } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { name } from "./cell.lit";
 
-console.log('register %O', name);
+console.log("register %O", name);
 
-@customElement('algo-stack')
+@customElement("algo-stack")
 export class Stack extends LitElement {
-
   static styles = css`
     .inline-array {
       display: flex;
@@ -20,13 +19,13 @@ export class Stack extends LitElement {
    * The stack to display
    */
   @property()
-  stack: string[] = []
+  stack: string[] = [];
 
   /**
    * The stack to display
    */
-  @property({type: Boolean})
-  static: boolean = false
+  @property({ type: Boolean })
+  static: boolean = false;
 
   /**
    * Update the underlying stack
@@ -40,7 +39,7 @@ export class Stack extends LitElement {
    * Update the underlying cells
    */
   cells(): HTMLElement[] {
-    return Array.from(this.shadowRoot?.querySelectorAll('algo-cell')!);
+    return Array.from(this.shadowRoot?.querySelectorAll("algo-cell")!);
   }
 
   /**
@@ -49,13 +48,13 @@ export class Stack extends LitElement {
   lastCellSpan(): HTMLElement | Element | undefined {
     const cells = this.cells();
     if (cells.length > 0) {
-      const cell = cells[cells.length-1];
+      const cell = cells[cells.length - 1];
       if (cell) {
         const inner = cell.shadowRoot?.firstElementChild;
-        return inner || undefined
+        return inner || undefined;
       }
     }
-    return undefined
+    return undefined;
   }
 
   /**
@@ -64,9 +63,9 @@ export class Stack extends LitElement {
   lastCell(): HTMLElement | Element | undefined {
     const cells = this.cells();
     if (cells.length > 0) {
-      return cells[cells.length-1];
+      return cells[cells.length - 1];
     }
-    return undefined
+    return undefined;
   }
 
   /**
@@ -74,17 +73,15 @@ export class Stack extends LitElement {
    */
   render() {
     if (this.static) {
-      return html`
-          <div class="inline-array" data-elem-stack>
-              <slot></slot>
-          </div>`;
-    }
-    return html`
-      <div class="inline-array" data-elem-stack>
-          ${this.stack.map((val, index) => {
-            return html`<algo-cell index=${index}>${val}</algo-cell>`
-        })}
+      return html` <div class="inline-array" data-elem-stack>
+        <slot></slot>
       </div>`;
+    }
+    return html` <div class="inline-array" data-elem-stack>
+      ${this.stack.map((val, index) => {
+        return html`<algo-cell index=${index}>${val}</algo-cell>`;
+      })}
+    </div>`;
   }
 }
 
