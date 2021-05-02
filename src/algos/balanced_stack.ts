@@ -4,7 +4,7 @@ export type Op =
 export type Val = { index: number; ops: Op[]; stack: string[] };
 export type Res = { result: boolean; values: Val[] };
 
-export function balanced(input: string): Res {
+export function balanced_stack(input: string): Res {
   const values: Val[] = [];
   const stack: string[] = [];
   const map = {

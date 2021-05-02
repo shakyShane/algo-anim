@@ -6,14 +6,16 @@ console.log("register %O", name);
 
 @customElement("algo-stack")
 export class Stack extends LitElement {
-  static styles = css`
-    .inline-array {
-      display: flex;
-    }
-    algo-cell {
-      opacity: 0;
-    }
-  `;
+  static styles = [
+    css`
+      .inline-array {
+        display: flex;
+      }
+      algo-cell {
+        opacity: 0;
+      }
+    `,
+  ];
 
   /**
    * The stack to display
@@ -40,21 +42,6 @@ export class Stack extends LitElement {
    */
   cells(): HTMLElement[] {
     return Array.from(this.shadowRoot?.querySelectorAll("algo-cell")!);
-  }
-
-  /**
-   * Update the underlying cells
-   */
-  lastCellSpan(): HTMLElement | Element | undefined {
-    const cells = this.cells();
-    if (cells.length > 0) {
-      const cell = cells[cells.length - 1];
-      if (cell) {
-        const inner = cell.shadowRoot?.firstElementChild;
-        return inner || undefined;
-      }
-    }
-    return undefined;
   }
 
   /**

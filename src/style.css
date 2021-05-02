@@ -28,6 +28,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 .cell-3d {
   /*outline: 1px solid red;*/
@@ -53,10 +54,12 @@ body {
   width: 40px;
   height: 40px;
 }
+
 .arrow-svg {
   width: 40px;
   height: 40px;
 }
+
 .var {
   font-size: 12px;
 }
@@ -81,4 +84,19 @@ body {
 
 path[stroke-width] {
   stroke: currentColor;
+}
+
+.pointer-row {
+  position: relative;
+  height: 40px;
+}
+
+algo-pointer {
+  opacity: 0;
+  visibility: hidden;
+  display: block;
+  width: 40px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

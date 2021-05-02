@@ -1,46 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
     <svg display="none">
-        <symbol id="arrow" viewBox="0 0 40 40">
-            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="4" fill="none" d="
+      <symbol id="arrow" viewBox="0 0 40 40">
+        <path
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          stroke-width="4"
+          fill="none"
+          d="
             M 20 10
             v 20
             l -8 -8
             m 8 8
             l 8 -8
-            "/>
-        </symbol>
+            "
+        />
+      </symbol>
     </svg>
   </head>
   <body>
     <div id="app">
-<!--      <algo-controls></algo-controls>-->
+      <!--      <algo-controls></algo-controls>-->
       <div class="row centered-column">
         <div>
           <span class="arrow" data-pointer>
             <svg class="arrow-svg"><use href="#arrow"></use></svg>
           </span>
-            <div class="row centered">
-                <algo-stack id="algo-input"></algo-stack>
-            </div>
+          <div class="row centered">
+            <algo-stack id="algo-input"></algo-stack>
+          </div>
         </div>
-    </div>
-    <div class="row centered min-height">
+      </div>
+      <div class="row centered min-height">
         <algo-action id="algo-action"></algo-action>
       </div>
       <div class="row centered-column">
         <div class="row centered">
-            <algo-cell variant="inert">[</algo-cell>
-            <algo-stack id="algo-stack"></algo-stack>
-            <algo-cell variant="inert">]</algo-cell>
+          <algo-cell variant="inert">[</algo-cell>
+          <algo-stack id="algo-stack"></algo-stack>
+          <algo-cell variant="inert">]</algo-cell>
         </div>
+      </div>
     </div>
-</div>
-<script type="module" src="/src/main.ts"></script>
-</body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>

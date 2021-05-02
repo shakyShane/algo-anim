@@ -3,7 +3,7 @@ import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
 import { name } from "./controls.lit";
 import { Action } from "./cell.lit";
-import { balanced, Res } from "./algos";
+import { balanced_stack, Res } from "./algos/balanced_stack";
 
 console.log("register %O", name);
 
@@ -30,7 +30,7 @@ export function init(input: string) {
     ACTION: algoAction,
   };
 
-  const res = balanced(input);
+  const res = balanced_stack(input);
 
   algoInput.stack = input.split("");
 
@@ -52,19 +52,20 @@ function pointer(res: Res, stack: BalancedStack) {
   const stackTimeline = gsap.timeline();
   const inputCells = stack.elems.INPUT.cells();
   const timeline = gsap.timeline();
+
+  timeline.set(inputCells, { visibility: "visible" }).fromTo(
+    inputCells,
+    { opacity: 0, translateY: 10 },
+    {
+      duration: 1,
+      opacity: 1,
+      translateY: 0,
+      stagger: 0.1,
+      ease: "elastic(1, 0.3)",
+    }
+  );
+
   timeline
-    .set(inputCells, { visibility: "visible" })
-    .fromTo(
-      inputCells,
-      { opacity: 0, translateY: 10 },
-      {
-        duration: 1,
-        opacity: 1,
-        translateY: 0,
-        stagger: 0.1,
-        ease: "elastic(1, 0.3)",
-      }
-    )
     .set(stack.elems.POINTER, { opacity: 1, visibility: "visible" })
     .fromTo(
       stack.elems.POINTER,
@@ -133,6 +134,7 @@ function pointer(res: Res, stack: BalancedStack) {
           "+=1"
         );
     }
+
     timeline.to(inputCells[index], {
       color: colors.DEFAULT,
       scale: 1,
