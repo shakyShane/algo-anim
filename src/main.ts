@@ -1,3 +1,3 @@
 import "./style.css";
 import { init } from "./balanced_stack";
-init();
+init("(12345)");

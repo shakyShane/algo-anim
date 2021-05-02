@@ -16,7 +16,7 @@ const times = {
   DURATION: 0.3,
 };
 
-export function init() {
+export function init(input: string) {
   const algoInput = document.getElementById("algo-input") as Stack;
   const algoStack = document.getElementById("algo-stack") as Stack;
   const algoAction = document.getElementById("algo-action") as Action;
@@ -30,7 +30,6 @@ export function init() {
     ACTION: algoAction,
   };
 
-  const input = "()[456]";
   const res = balanced(input);
 
   algoInput.stack = input.split("");

@@ -15,7 +15,6 @@ export function balanced(input: string): Res {
   let result = true;
   loop: for (let i = 0; i < input.length; i += 1) {
     const char = input[i];
-    console.log("char", char);
     switch (char) {
       case "(":
       case "{":
