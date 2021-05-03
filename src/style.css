@@ -21,6 +21,9 @@ body {
 .centered {
   justify-content: center;
 }
+.centered algo-stack {
+  width: 100%;
+}
 .min-height {
   height: 62px;
 }
@@ -84,19 +87,4 @@ body {
 
 path[stroke-width] {
   stroke: currentColor;
-}
-
-.pointer-row {
-  position: relative;
-  height: 40px;
-}
-
-algo-pointer {
-  opacity: 0;
-  visibility: hidden;
-  display: block;
-  width: 40px;
-  position: absolute;
-  top: 0;
-  left: 0;
 }

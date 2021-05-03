@@ -1,6 +1,18 @@
 import Timeline = gsap.core.Timeline;
 import TweenTarget = gsap.TweenTarget;
 
+export const colors = {
+  SELECTED: "#aed049",
+  GREEN: "#aed049",
+  ORANGE: "orange",
+  LIGHT_BLUE: "lightblue",
+  DEFAULT: "#ffffff",
+};
+
+export const times = {
+  DURATION: 0.3,
+};
+
 export function bounceInputIn<T extends HTMLElement>(timeline, cells: T[]) {
   timeline.set(cells, { visibility: "visible" }).fromTo(
     cells,
@@ -15,15 +27,11 @@ export function bounceInputIn<T extends HTMLElement>(timeline, cells: T[]) {
   );
 }
 
-export function fadeInPointer(
-  timeline: Timeline,
-  elem: TweenTarget,
-  duration: number
-) {
+export function fadeInPointer(timeline: Timeline, elem: TweenTarget, color = "white", duration = times.DURATION) {
   timeline.fromTo(
     elem,
-    { visibility: "hidden", opacity: 0, scale: 0, duration },
-    { visibility: "visible", opacity: 1, scale: 1, duration }
+    { color, visibility: "hidden", opacity: 0, scale: 0, duration },
+    { color, visibility: "visible", opacity: 1, scale: 1, duration }
   );
 }
 

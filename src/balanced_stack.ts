@@ -4,17 +4,9 @@ import Stack from "./algo-stack.lit";
 import { name } from "./controls.lit";
 import { Action } from "./cell.lit";
 import { balanced_stack, Res } from "./algos/balanced_stack";
+import { colors, times } from "./common-animations";
 
 console.log("register %O", name);
-
-const colors = {
-  SELECTED: "#aed049",
-  DEFAULT: "#ffffff",
-};
-
-const times = {
-  DURATION: 0.3,
-};
 
 export function init(input: string) {
   const algoInput = document.getElementById("algo-input") as Stack;
