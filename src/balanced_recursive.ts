@@ -6,6 +6,7 @@ import { name as pointerName } from "./pointer.lit";
 import { Action } from "./cell.lit";
 import { balanced_stack, Res } from "./algos/balanced_stack";
 import { bounceInputIn, fadeInPointer } from "./common-animations";
+import { balanced_recursive } from "./algos/balanced_recursive";
 
 console.log("register %O", name);
 console.log("register %O", pointerName);
@@ -33,6 +34,8 @@ export function init(input: string) {
     ACTION: algoAction,
   };
 
+  const rec = balanced_recursive(input);
+  console.log(JSON.stringify(rec, null, 2));
   const res = balanced_stack(input);
 
   algoInput.stack = input.split("");
