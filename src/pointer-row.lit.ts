@@ -1,8 +1,8 @@
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { Pointer } from "./pointer.lit";
 
-type Row = { id: number };
+type Row = { id: string };
 
 @customElement("algo-pointer-row")
 export class PointerRow extends LitElement {
@@ -28,6 +28,10 @@ export class PointerRow extends LitElement {
     this.rows = this.rows.concat(row);
   }
 
+  removeRow(id: Row["id"]) {
+    this.rows = this.rows.filter((x) => x.id === id);
+  }
+
   pointers(): Pointer[] {
     let elems = this.shadowRoot?.querySelectorAll<Pointer>("algo-pointer");
     if (elems) {
@@ -36,7 +40,7 @@ export class PointerRow extends LitElement {
     return [];
   }
 
-  byId(id: number): Pointer | undefined {
+  byId(id: string): Pointer | undefined {
     const index = this.rows.findIndex((x) => x.id === id);
     if (index !== undefined) {
       const cells = this.pointers();
@@ -52,7 +56,7 @@ export class PointerRow extends LitElement {
    */
   render() {
     return html`<div class="wrap">
-      ${this.rows.map((row, index) => html`<algo-pointer direction="up" data-index=${index}></algo-pointer>`)}
+      ${this.rows.map((_, index) => html`<algo-pointer direction="up" data-index=${index}></algo-pointer>`)}
     </div> `;
   }
 }

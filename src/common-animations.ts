@@ -35,6 +35,10 @@ export function fadeInPointer(timeline: Timeline, elem: TweenTarget, color = "wh
   );
 }
 
+export function showPointer(timeline: Timeline, elem: TweenTarget, color = "white") {
+  timeline.set(elem, { color, visibility: "visible", opacity: 1, duration: 0 });
+}
+
 // export function advancePointer(timeline: Timeline, target: TweenTarget, index: number, step: number) {
 //   timeline.to(stack.elems.POINTER_1, {
 //     translateX: (step + 1) * 40,
