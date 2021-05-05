@@ -2,11 +2,10 @@ import { gsap } from "gsap";
 import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
 import { name } from "./controls.lit";
-import { name as pointerName } from "./pointer.lit";
+import { name as pointerName, Pointer } from "./pointer.lit";
 import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
 import { Action } from "./cell.lit";
-import { bounceInputIn, fadeInPointer, showPointer } from "./common-animations";
-import { balanced_recursive } from "./algos/balanced_recursive";
+import { bounceInputIn, fadeInPointer, showPointer, times } from "./common-animations";
 
 console.log("register %O", name);
 console.log("register %O", pointerName);
@@ -82,91 +81,69 @@ const results: Record<string, Result> = {
       { kind: "remove", id: "a" },
     ],
   },
+  "~([{}])~": {
+    input: "~([{}])~",
+    ops: [
+      { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
+      { kind: "move", id: "a", left: 1, right: 1 },
+      { kind: "create", id: "b", left: 2, right: 2, color: Color.pink },
+      { kind: "create", id: "c", left: 3, right: 3, color: Color.orange },
+      { kind: "create", id: "d", left: 4, right: 4, color: Color.lightgreen },
+      { kind: "match", left: "c", right: "d" },
+      { kind: "remove", id: "d" },
+      { kind: "move", id: "c", left: 5, right: 5 },
+      { kind: "match", left: "b", right: "c" },
+      { kind: "remove", id: "c" },
+      { kind: "move", id: "b", left: 6, right: 6 },
+      { kind: "match", left: "a", right: "b" },
+      { kind: "remove", id: "b" },
+      { kind: "move", id: "a", left: 7, right: 7 },
+      { kind: "remove", id: "a" },
+    ],
+  },
 };
 
 function process(op: Op, params: BalancedStack) {
   const { main } = params.timelines;
-  console.log(op);
   switch (op.kind) {
     case "create": {
-      main
-        .call(() => {
-          params.elems.POINTER_ROW.addRow({ id: `${op.id}-left` });
-          params.elems.POINTER_ROW.addRow({ id: `${op.id}-right` });
-        })
-        .call(
-          () => {
-            let new_pointer_left = params.elems.POINTER_ROW.byId(`${op.id}-left`)!;
-            let new_pointer_right = params.elems.POINTER_ROW.byId(`${op.id}-right`)!;
-            main.set(new_pointer_left, { translateX: op.left * 40, duration: 0 });
-            main.set(new_pointer_right, { translateX: op.right * 40, duration: 0 });
-            fadeInPointer(main, new_pointer_left, op.color);
-            showPointer(main, new_pointer_right, op.color);
-            // showPointer(main, new_pointer_right, op.color);
-          },
-          [],
-          "+=0.1"
-        );
+      const { left, right } = params.pointers(op.id);
+      main.set(left, { translateX: op.left * 40, duration: 0 });
+      main.set(right, { translateX: op.right * 40, duration: 0 });
+      fadeInPointer(main, left, op.color);
+      showPointer(main, right, op.color);
       break;
     }
     case "move": {
-      main.call(
-        () => {
-          const l = params.elems.POINTER_ROW.byId(`${op.id}-left`)!;
-          const r = params.elems.POINTER_ROW.byId(`${op.id}-right`)!;
-          if (op.left === op.right) {
-            main.to([l, r], { translateX: op.left * 40 });
-          } else {
-            main.to(l, { translateX: op.left * 40 });
-            main.to(r, { translateX: op.right * 40 });
-          }
-          // console.log(op.right * 40, r);
-        },
-        [],
-        "+=0.1"
-      );
+      const { left, right } = params.pointers(op.id);
+      if (op.left === op.right) {
+        main.to([left, right], { translateX: op.left * 40 });
+      } else {
+        main.to(left, { translateX: op.left * 40 });
+        main.to(right, { translateX: op.right * 40 });
+      }
       break;
     }
     case "match": {
-      main.call(
-        () => {
-          const ll = params.elems.POINTER_ROW.byId(`${op.left}-left`)!;
-          const lr = params.elems.POINTER_ROW.byId(`${op.left}-right`)!;
-          const rl = params.elems.POINTER_ROW.byId(`${op.right}-left`)!;
-          const rr = params.elems.POINTER_ROW.byId(`${op.right}-right`)!;
-          main.to([ll, lr, rl, rr], { scale: 1.5 });
-          main.to([ll, lr, rl, rr], { scale: 1 });
-        },
-        [],
-        "+=0.1"
-      );
+      const { left, right } = params.pointers(op.left);
+      const { left: rleft, right: rright } = params.pointers(op.right);
+      main.to([left, right, rleft, rright], { scale: 1.5 });
+      main.to([left, right, rleft, rright], { scale: 1 });
       break;
     }
     case "remove": {
-      main.call(
-        () => {
-          const l = params.elems.POINTER_ROW.byId(`${op.id}-left`)!;
-          const r = params.elems.POINTER_ROW.byId(`${op.id}-right`)!;
-          main.to([l, r], { opacity: 0, visibility: "visible" });
-        },
-        [],
-        "+=0.1"
-      );
+      const { left, right } = params.pointers(op.id);
+      main.to([left, right], { opacity: 0, visibility: "visible" });
       break;
     }
     case "remove-many": {
-      main.call(
-        () => {
-          const elems: any[] = [];
-          op.ids.forEach((id) => {
-            elems.push(params.elems.POINTER_ROW.byId(`${id}-left`)!);
-            elems.push(params.elems.POINTER_ROW.byId(`${id}-right`)!);
-          });
-          main.to(elems, { opacity: 0, visibility: "visible" });
-        },
-        [],
-        "+=0.1"
-      );
+      const elems: any[] = [];
+      op.ids.forEach((id) => {
+        const { left, right } = params.pointers(id);
+        elems.push(left);
+        elems.push(right!);
+      });
+      main.to(elems, { opacity: 0, visibility: "visible" });
       break;
     }
     default:
@@ -186,6 +163,15 @@ export function init(input: string) {
 
   algoInput.stack = input.split("");
 
+  res.ops.forEach((op) => {
+    switch (op.kind) {
+      case "create": {
+        algoRow.addRow({ id: `${op.id}-left` });
+        algoRow.addRow({ id: `${op.id}-right` });
+      }
+    }
+  });
+
   setTimeout(() => {
     const params: BalancedStack = {
       elems: {
@@ -193,7 +179,13 @@ export function init(input: string) {
         ACTION: algoAction,
         POINTER_ROW: algoRow,
       },
-      timelines: { main: gsap.timeline() },
+      pointers: (id) => {
+        return {
+          left: algoRow.byId(`${id}-left`)!,
+          right: algoRow.byId(`${id}-right`)!,
+        };
+      },
+      timelines: { main: gsap.timeline({ defaults: { duration: times.DURATION * 2 } }) },
     };
     master.add(timeline(res.ops, params));
   }, 0);
@@ -205,6 +197,7 @@ interface BalancedStack {
     ACTION: Action;
     POINTER_ROW: PointerRow;
   };
+  pointers: (id: string) => { left: Pointer; right: Pointer };
   timelines: {
     main: gsap.core.Timeline;
   };
