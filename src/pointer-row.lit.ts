@@ -9,6 +9,7 @@ export class PointerRow extends LitElement {
   static styles = css`
     .wrap {
       position: relative;
+      height: 40px;
     }
     algo-pointer {
       opacity: 0;

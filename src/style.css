@@ -88,3 +88,8 @@ body {
 path[stroke-width] {
   stroke: currentColor;
 }
+
+algo-result {
+  opacity: 0;
+  visibility: hidden;
+}

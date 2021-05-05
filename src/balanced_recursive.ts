@@ -4,12 +4,15 @@ import Stack from "./algo-stack.lit";
 import { name } from "./controls.lit";
 import { name as pointerName, Pointer } from "./pointer.lit";
 import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
+import { name as resultName, Result } from "./result.lit";
 import { Action } from "./cell.lit";
 import { bounceInputIn, fadeInPointer, showPointer, times } from "./common-animations";
+import { balanced_recursive } from "./algos/balanced_recursive";
 
 console.log("register %O", name);
 console.log("register %O", pointerName);
 console.log("register %O", pointerRowName);
+console.log("register %O", resultName);
 
 type PointerId = string;
 type XIndex = number;
@@ -23,20 +26,21 @@ enum Color {
   lightgreen = "lightgreen",
 }
 
-type Result = {
+type ResultOps = {
   input: string;
   ops: Op[];
 };
 
-// prettier-ignore
 type Op =
-  | { kind: 'create', color: Color, id: PointerId, left: XIndex, right: XIndex }
-  | { kind: 'move', id: PointerId, left: XIndex, right: XIndex }
-  | { kind: 'match', left: PointerId, right: PointerId }
-  | { kind: 'remove', id: PointerId }
-  | { kind: 'remove-many', ids: PointerId[] }
+  | { kind: "create"; color: Color; id: PointerId; left: XIndex; right: XIndex }
+  | { kind: "move"; id: PointerId; left: XIndex; right: XIndex }
+  | { kind: "match"; left: PointerId; right: PointerId }
+  | { kind: "none-match"; left: PointerId; right: PointerId }
+  | { kind: "remove"; id: PointerId }
+  | { kind: "remove-many"; ids: PointerId[] }
+  | { kind: "result"; result: boolean };
 
-const results: Record<string, Result> = {
+const results: Record<string, ResultOps> = {
   "3()[]": {
     input: "3()[]",
     ops: [
@@ -73,12 +77,27 @@ const results: Record<string, Result> = {
     input: "(1+2)",
     ops: [
       { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
-      { kind: "move", id: "a", left: 0, right: 1 },
-      { kind: "move", id: "a", left: 0, right: 2 },
-      { kind: "move", id: "a", left: 0, right: 3 },
-      { kind: "move", id: "a", left: 0, right: 4 },
-      { kind: "match", left: "a", right: "a" },
-      { kind: "remove", id: "a" },
+      { kind: "create", id: "b", left: 0, right: 0, color: Color.orange },
+      { kind: "move", id: "b", left: 1, right: 1 },
+      { kind: "move", id: "b", left: 2, right: 2 },
+      { kind: "move", id: "b", left: 3, right: 3 },
+      { kind: "move", id: "b", left: 4, right: 4 },
+      { kind: "match", left: "a", right: "b" },
+      { kind: "remove-many", ids: ["a", "b"] },
+    ],
+  },
+  "12(1+2": {
+    input: "12(1+2",
+    ops: [
+      { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
+      { kind: "move", id: "a", left: 1, right: 1 },
+      { kind: "move", id: "a", left: 2, right: 2 },
+      { kind: "create", id: "b", left: 3, right: 3, color: Color.pink },
+      { kind: "move", id: "b", left: 4, right: 4 },
+      { kind: "move", id: "b", left: 5, right: 5 },
+      { kind: "none-match", left: "a", right: "b" },
+      { kind: "remove-many", ids: ["a", "b"] },
+      { kind: "result", result: false },
     ],
   },
   "~([{}])~": {
@@ -131,6 +150,13 @@ function process(op: Op, params: BalancedStack) {
       main.to([left, right, rleft, rright], { scale: 1 });
       break;
     }
+    case "none-match": {
+      const { left, right } = params.pointers(op.left);
+      const { left: rleft, right: rright } = params.pointers(op.right);
+      main.to([left, right, rleft, rright], { scale: 1.5, color: Color.red });
+      main.to([left, right, rleft, rright], { scale: 1 });
+      break;
+    }
     case "remove": {
       const { left, right } = params.pointers(op.id);
       main.to([left, right], { opacity: 0, visibility: "visible" });
@@ -146,6 +172,10 @@ function process(op: Op, params: BalancedStack) {
       main.to(elems, { opacity: 0, visibility: "visible" });
       break;
     }
+    case "result": {
+      main.to(params.elems.RESULT, { opacity: 1, visibility: "visible" });
+      break;
+    }
     default:
       throw new Error(`didn't expect to get here ${JSON.stringify(op)}`);
   }
@@ -157,10 +187,13 @@ export function init(input: string) {
   const algoAction = document.getElementById("algo-action") as Action;
   const algoRow = document.querySelector("algo-pointer-row") as PointerRow;
   const algoInput = document.querySelector("algo-stack") as Stack;
+  const algoResult = document.querySelector("algo-result") as Result;
   const master = gsap.timeline();
 
-  // const res = balanced_recursive(input);
+  const res1 = balanced_recursive(input);
 
+  algoResult.prefix = "Balanced";
+  algoResult.result = res1;
   algoInput.stack = input.split("");
 
   res.ops.forEach((op) => {
@@ -178,6 +211,7 @@ export function init(input: string) {
         INPUT: algoInput,
         ACTION: algoAction,
         POINTER_ROW: algoRow,
+        RESULT: algoResult,
       },
       pointers: (id) => {
         return {
@@ -196,6 +230,7 @@ interface BalancedStack {
     INPUT: Stack;
     ACTION: Action;
     POINTER_ROW: PointerRow;
+    RESULT: Result;
   };
   pointers: (id: string) => { left: Pointer; right: Pointer };
   timelines: {
