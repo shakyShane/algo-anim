@@ -35,6 +35,7 @@ type Op =
   | { kind: 'move', id: PointerId, left: XIndex, right: XIndex }
   | { kind: 'match', left: PointerId, right: PointerId }
   | { kind: 'remove', id: PointerId }
+  | { kind: 'remove-many', ids: PointerId[] }
 
 const results: Record<string, Result> = {
   "3()[]": {
@@ -50,6 +51,23 @@ const results: Record<string, Result> = {
       { kind: "match", left: "a", right: "c" },
       { kind: "remove", id: "c" },
       { kind: "remove", id: "a" },
+    ],
+  },
+  "3(000)[]": {
+    input: "3(000)[]",
+    ops: [
+      { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
+      { kind: "move", id: "a", left: 1, right: 1 },
+      { kind: "create", id: "b", left: 2, right: 2, color: Color.pink },
+      { kind: "move", id: "b", left: 3, right: 3 },
+      { kind: "move", id: "b", left: 4, right: 4 },
+      { kind: "move", id: "b", left: 5, right: 5 },
+      { kind: "match", left: "a", right: "b" },
+      { kind: "remove", id: "b" },
+      { kind: "move", id: "a", left: 6, right: 6 },
+      { kind: "create", id: "c", left: 7, right: 7, color: Color.orange },
+      { kind: "match", left: "a", right: "c" },
+      { kind: "remove-many", ids: ["a", "c"] },
     ],
   },
   "(1+2)": {
@@ -130,6 +148,21 @@ function process(op: Op, params: BalancedStack) {
           const l = params.elems.POINTER_ROW.byId(`${op.id}-left`)!;
           const r = params.elems.POINTER_ROW.byId(`${op.id}-right`)!;
           main.to([l, r], { opacity: 0, visibility: "visible" });
+        },
+        [],
+        "+=0.1"
+      );
+      break;
+    }
+    case "remove-many": {
+      main.call(
+        () => {
+          const elems: any[] = [];
+          op.ids.forEach((id) => {
+            elems.push(params.elems.POINTER_ROW.byId(`${id}-left`)!);
+            elems.push(params.elems.POINTER_ROW.byId(`${id}-right`)!);
+          });
+          main.to(elems, { opacity: 0, visibility: "visible" });
         },
         [],
         "+=0.1"
