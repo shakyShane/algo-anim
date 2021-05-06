@@ -1,8 +1,10 @@
 import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
-import { name } from "./cell.lit";
+import { Cell, name } from "./cell.lit";
 
 console.log("register %O", name);
+
+type Item = { id: string; char: string };
 
 @customElement("algo-stack")
 export class Stack extends LitElement {
@@ -23,7 +25,17 @@ export class Stack extends LitElement {
    * The stack to display
    */
   @property()
-  stack: string[] = [];
+  stack: Item[] = [];
+
+  /**
+   * Create a stack from an input string
+   * @param input
+   */
+  fromStr(input: string) {
+    this.stack = input.split("").map((x, index) => {
+      return { id: `${x}-${index}`, char: x };
+    });
+  }
 
   /**
    * The stack to display
@@ -33,10 +45,17 @@ export class Stack extends LitElement {
 
   /**
    * Update the underlying stack
-   * @param stack
+   * @param item
    */
-  setStack(stack: string[]) {
-    this.stack = stack;
+  push(item: Item) {
+    this.stack = this.stack.concat(item);
+  }
+
+  /**
+   * Update the underlying stack
+   */
+  removeItem(id: Item["id"]) {
+    this.stack = this.stack.filter((x) => x.id === id);
   }
 
   /**
@@ -44,6 +63,18 @@ export class Stack extends LitElement {
    */
   cells(): HTMLElement[] {
     return Array.from(this.shadowRoot?.querySelectorAll("algo-cell")!);
+  }
+
+  byId(id: string): Cell | undefined {
+    const index = this.stack.findIndex((x) => x.id === id);
+    if (index !== undefined && this.stack[index]) {
+      const id = this.stack[index].id;
+      const match = this.shadowRoot?.querySelector(`algo-cell[data-id="${id}"]`);
+      if (match) {
+        return match as Cell;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -68,7 +99,7 @@ export class Stack extends LitElement {
     }
     return html` <div class="inline-array" data-elem-stack>
       ${this.stack.map((val, index) => {
-        return html`<algo-cell index=${index}>${val}</algo-cell>`;
+        return html`<algo-cell data-id=${val.id} index=${index}>${val.char}</algo-cell>`;
       })}
     </div>`;
   }

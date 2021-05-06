@@ -9,25 +9,21 @@
   <body>
     <div id="app">
       <!--      <algo-controls></algo-controls>-->
-      <div class="row centered-column">
+      <div class="row">
         <div>
-          <div class="pointer-row">
+          <span class="prefix">Input:</span>
+          <div class="row-height">
             <algo-pointer-row></algo-pointer-row>
           </div>
-          <div class="row centered">
-            <algo-stack id="algo-input"></algo-stack>
-          </div>
+          <algo-stack id="algo-input"></algo-stack>
         </div>
       </div>
-      <div class="row centered min-height">
-        <algo-action id="algo-action"></algo-action>
+      <div class="row gap">
+        <span class="prefix">Stack:</span>
+        <algo-stack id="algo-stack"></algo-stack>
       </div>
-      <div class="row centered-column">
-        <div class="row centered">
-          <algo-cell variant="inert">[</algo-cell>
-          <algo-stack id="algo-stack"></algo-stack>
-          <algo-cell variant="inert">]</algo-cell>
-        </div>
+      <div class="row gap">
+        <algo-result></algo-result>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

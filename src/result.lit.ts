@@ -15,7 +15,7 @@ export class Result extends LitElement {
   `;
 
   @property({ type: String })
-  prefix: string = "Result: ";
+  prefix: string = "Result";
 
   @property()
   result: boolean | null = null;

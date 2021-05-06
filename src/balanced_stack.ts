@@ -3,8 +3,8 @@ import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
 import { name } from "./controls.lit";
 import { Action } from "./cell.lit";
-import { balanced_stack, Res } from "./algos/balanced_stack";
-import { Color, colors, PointerId, times, XIndex } from "./common-animations";
+import { balanced_stack } from "./algos/balanced_stack";
+import { bounceInputIn, Color, fadeInPointer, PointerId, showPointer, times, XIndex } from "./common-animations";
 import { name as pointerName, Pointer } from "./pointer.lit";
 import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
 import { name as resultName, Result } from "./result.lit";
@@ -20,207 +20,203 @@ type ResultOps = {
   ops: Op[];
 };
 
-// prettier-ignore
 type Op =
-  | { kind: "create"; color: Color; id: PointerId; left: XIndex; right: XIndex };
+  | { kind: "create"; color: Color; id: PointerId; left: XIndex; right: XIndex }
+  | { kind: "append-stack"; id: string; char: string }
+  | { kind: "pop-stack"; id: string }
+  | { kind: "move"; id: PointerId; left: XIndex; right: XIndex }
+  | { kind: "stack-match"; inputId: PointerId; stackId: PointerId }
+  | { kind: "stack-none-match"; inputId: PointerId; stackId: PointerId }
+  | { kind: "none-match"; left: PointerId; right: PointerId }
+  | { kind: "result"; result: boolean };
 
 const results: Record<string, ResultOps> = {
-  "3()[]": {
-    input: "3()[]",
-    ops: [],
+  "([{123}])": {
+    input: "([{123}])",
+    ops: [
+      { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
+      { kind: "append-stack", id: "vec-a", char: ")" },
+      { kind: "move", id: "a", left: 1, right: 1 },
+      { kind: "append-stack", id: "vec-b", char: "]" },
+      { kind: "move", id: "a", left: 2, right: 2 },
+      { kind: "append-stack", id: "vec-c", char: "}" },
+      { kind: "move", id: "a", left: 3, right: 3 },
+      { kind: "move", id: "a", left: 4, right: 4 },
+      { kind: "move", id: "a", left: 5, right: 5 },
+      { kind: "move", id: "a", left: 6, right: 6 },
+      { kind: "stack-match", inputId: "}-6", stackId: "vec-c" },
+      { kind: "pop-stack", id: "vec-c" },
+      { kind: "move", id: "a", left: 7, right: 7 },
+      { kind: "stack-match", inputId: "]-7", stackId: "vec-b" },
+      { kind: "pop-stack", id: "vec-b" },
+      { kind: "move", id: "a", left: 8, right: 8 },
+      { kind: "stack-match", inputId: ")-8", stackId: "vec-a" },
+      { kind: "pop-stack", id: "vec-a" },
+      { kind: "result", result: true },
+    ],
+  },
+  // empty
+  "12(1+2": {
+    input: "12(1+2",
+    ops: [
+      { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
+      { kind: "move", id: "a", left: 1, right: 1 },
+      { kind: "move", id: "a", left: 2, right: 2 },
+      { kind: "append-stack", id: "vec-a", char: ")" },
+      { kind: "move", id: "a", left: 3, right: 3 },
+      { kind: "move", id: "a", left: 4, right: 4 },
+      { kind: "move", id: "a", left: 5, right: 5 },
+      { kind: "result", result: false },
+    ],
+  },
+  // empty
+  "([})": {
+    input: "([})",
+    ops: [
+      { kind: "create", id: "a", left: 0, right: 0, color: Color.white },
+      { kind: "append-stack", id: "vec-0", char: ")" },
+      { kind: "move", id: "a", left: 1, right: 1 },
+      { kind: "append-stack", id: "vec-1", char: "]" },
+      { kind: "move", id: "a", left: 2, right: 2 },
+      { kind: "stack-none-match", inputId: "}-2", stackId: "vec-1" },
+      { kind: "result", result: false },
+      // { kind: "move", id: "a", left: 2, right: 2 },
+      // { kind: "move", id: "a", left: 3, right: 3 },
+      // { kind: "move", id: "a", left: 4, right: 4 },
+      // { kind: "move", id: "a", left: 5, right: 5 },
+    ],
   },
 };
 
 export function init(input: string) {
+  const res = results[input];
+  if (!res) throw new Error("input not found");
   const algoInput = document.getElementById("algo-input") as Stack;
   const algoStack = document.getElementById("algo-stack") as Stack;
   const algoAction = document.getElementById("algo-action") as Action;
   const algoRow = document.querySelector("algo-pointer-row") as PointerRow;
+  const algoResult = document.querySelector("algo-result") as Result;
 
   const master = gsap.timeline();
 
-  const elems = {
-    POINTER: "[data-pointer]",
-    INPUT: algoInput,
-    STACK: algoStack,
-    ACTION: algoAction,
-    POINTER_ROW: algoRow,
-  };
+  const res1 = balanced_stack(input);
+  algoResult.result = res1.result;
+  algoResult.prefix = "Balanced";
 
-  const res = balanced_stack(input);
-
-  algoInput.stack = input.split("");
+  algoInput.fromStr(input);
   algoRow.addRow({ id: "a" });
 
+  res.ops.forEach((op) => {
+    switch (op.kind) {
+      case "append-stack": {
+        algoStack.push({ id: op.id, char: op.char });
+      }
+    }
+  });
+
   const params: BalancedStack = {
-    elems,
+    elems: {
+      INPUT: algoInput,
+      STACK: algoStack,
+      ACTION: algoAction,
+      POINTER_ROW: algoRow,
+      RESULT: algoResult,
+    },
+    pointers: (id) => {
+      return {
+        left: algoRow.byId(`${id}`)!,
+        right: algoRow.byId(`${id}`)!,
+      };
+    },
+    timelines: { main: gsap.timeline({ defaults: { duration: times.DURATION * 2 } }) },
   };
 
   setTimeout(() => {
-    master.add(pointer(res, params));
+    master.add(timeline(res.ops, params));
   }, 0);
 }
 
 interface BalancedStack {
   elems: {
-    STACK: Stack;
     INPUT: Stack;
+    STACK: Stack;
     ACTION: Action;
     POINTER_ROW: PointerRow;
+    RESULT: Result;
+  };
+  pointers: (id: string) => { left: Pointer; right: Pointer };
+  timelines: {
+    main: gsap.core.Timeline;
   };
 }
-
-function pointer(res: Res, stack: BalancedStack) {
-  const values = res.values;
-  const stackTimeline = gsap.timeline();
-  const inputCells = stack.elems.INPUT.cells();
-  const timeline = gsap.timeline();
-  const pointer = stack.elems.POINTER_ROW.byId("a");
-
-  invariant(pointer, "missing pointer");
-
-  timeline.set(inputCells, { visibility: "visible" }).fromTo(
-    inputCells,
-    { opacity: 0, translateY: 10 },
-    {
-      duration: 1,
-      opacity: 1,
-      translateY: 0,
-      stagger: 0.1,
-      ease: "elastic(1, 0.3)",
-    }
-  );
-
-  timeline
-    .set(pointer, { opacity: 1, visibility: "visible" })
-    .fromTo(pointer, { scale: 0, duration: times.DURATION }, { scale: 1, duration: times.DURATION });
-
-  values.forEach((val, index) => {
-    const op = val.ops[0];
-    timeline
-      .to(pointer, {
-        translateX: val.index * 40,
-        duration: times.DURATION,
-        delay: index > 0 ? times.DURATION : 0,
-        ease: "release",
-      })
-      .to(inputCells[index], {
-        color: colors.SELECTED,
-        scale: 1.5,
-        duration: times.DURATION,
-      });
-
-    if (op && op.name) {
-      timeline
-        .call(() => {
-          const strings = val.ops
-            .map((op) => {
-              switch (op.name) {
-                case "push":
-                  return `push("${op.value}")`;
-                case "pop":
-                  return `pop()`;
-                case "cmp":
-                  return `${op.values.lhs} === ${op.values.rhs}`;
-                default:
-                  return "";
-              }
-            })
-            .join(", ");
-          stack.elems.ACTION.action = strings;
-        })
-        .fromTo(
-          stack.elems.ACTION,
-          {
-            scale: 0.8,
-            translateY: -20,
-            opacity: 0,
-            duration: times.DURATION,
-          },
-          {
-            scale: 1,
-            translateY: 0,
-            opacity: 1,
-            duration: times.DURATION,
-          }
-        )
-        .addLabel("action-in")
-        .to(
-          stack.elems.ACTION,
-          {
-            scale: 0.8,
-            translateY: 20,
-            opacity: 0,
-            duration: times.DURATION,
-          },
-          "+=1"
-        );
-    }
-
-    timeline.to(inputCells[index], {
-      color: colors.DEFAULT,
-      scale: 1,
-      duration: times.DURATION,
-    });
-
-    timeline
-      .call(
-        () => {
-          if (!op) return;
-          if (op.name === "push") {
-            stack.elems.STACK.setStack(val.stack);
-          }
-          if (op.name === "pop") {
-            const lastCell = stack.elems.STACK.lastCell();
-            // const last = algoStack.lastCellSpan();
-            if (lastCell) {
-              stackTimeline
-                .to(lastCell!, {
-                  opacity: 0,
-                  scale: 0,
-                  duration: times.DURATION,
-                })
-                .call(() => {
-                  stack.elems.STACK.setStack(val.stack);
-                });
-            }
-          }
-        },
-        [],
-        "action-in+=0.2"
-      )
-      .addLabel("after-action-in");
-
-    timeline.call(
-      () => {
-        const last = stack.elems.STACK.lastCell();
-        if (last && op && op.name === "push") {
-          stackTimeline.fromTo(
-            last!,
-            { opacity: 0, scale: 0, duration: times.DURATION },
-            {
-              opacity: 1,
-              scale: 1,
-              duration: times.DURATION,
-            }
-          );
-        }
-      },
-      [],
-      "after-action-in-=1"
-    );
+function timeline(ops: Op[], params: BalancedStack) {
+  const { main } = params.timelines;
+  // console.log(ops);
+  bounceInputIn(main, params.elems.INPUT.cells());
+  ops.forEach((op) => {
+    process(op, params);
   });
+  // pointer(res, params);
+  return main;
+}
 
-  timeline
-    .call(() => {
-      stack.elems.ACTION.action = `balanced: ${res.result}`;
-    })
-    .to(stack.elems.ACTION, {
-      opacity: 1,
-      translateY: 0,
-      duration: times.DURATION,
-    });
-
+function process(op: Op, params: BalancedStack) {
+  const { main } = params.timelines;
+  const { STACK, INPUT } = params.elems;
+  switch (op.kind) {
+    case "create": {
+      const { left, right } = params.pointers(op.id);
+      main.set(left, { translateX: op.left * 40, duration: 0 });
+      main.set(right, { translateX: op.right * 40, duration: 0 });
+      fadeInPointer(main, left, op.color);
+      showPointer(main, right, op.color);
+      break;
+    }
+    case "append-stack": {
+      const stackElem = STACK.byId(op.id);
+      invariant(stackElem, `missing stack elem id: ${op.id}`);
+      main
+        .set(stackElem, { color: Color.lightgreen, visibility: "visible" })
+        .fromTo(stackElem, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1 });
+      break;
+    }
+    case "pop-stack": {
+      const stackElem = STACK.byId(op.id);
+      invariant(stackElem, `missing stack elem id: ${op.id}`);
+      main.to(stackElem, { scale: 0, opacity: 0, visibility: "hidden" });
+      break;
+    }
+    case "move": {
+      const { left, right } = params.pointers(op.id);
+      if (op.left === op.right) {
+        main.to([left, right], { translateX: op.left * 40 });
+      } else {
+        main.to(left, { translateX: op.left * 40 });
+        main.to(right, { translateX: op.right * 40 });
+      }
+      break;
+    }
+    case "stack-match": {
+      const inputChar = INPUT.byId(op.inputId);
+      const stackChar = STACK.byId(op.stackId);
+      invariant(inputChar && stackChar, "inputChar and stackChar required");
+      main.to([inputChar, stackChar], { scale: 2 }).to([inputChar, stackChar], { scale: 1 });
+      break;
+    }
+    case "stack-none-match": {
+      const inputChar = INPUT.byId(op.inputId);
+      const stackChar = STACK.byId(op.stackId);
+      invariant(inputChar && stackChar, "inputChar and stackChar required");
+      main.to([inputChar, stackChar], { scale: 2, color: Color.red }).to([inputChar, stackChar], { scale: 1 });
+      break;
+    }
+    case "result": {
+      main.to(params.elems.RESULT, { opacity: 1, visibility: "visible" });
+      break;
+    }
+    default:
+      console.warn(`didn't expect to get here ${JSON.stringify(op)}`);
+  }
   return timeline;
 }
 

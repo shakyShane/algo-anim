@@ -206,7 +206,7 @@ export function init(input: string) {
 
   algoResult.prefix = "Balanced";
   algoResult.result = res1;
-  algoInput.stack = input.split("");
+  algoInput.fromStr(input);
 
   res.ops.forEach((op) => {
     switch (op.kind) {

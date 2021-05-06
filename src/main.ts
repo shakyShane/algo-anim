@@ -5,5 +5,6 @@ import { init } from "./balanced_stack";
 // init("3()[]");
 // init("3(000)[]");
 // init("~([{}])~");
-init("([{123}])");
+// init("([{123}])");
 // init("12(1+2");
+init("([})");
