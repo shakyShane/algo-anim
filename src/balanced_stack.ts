@@ -4,14 +4,38 @@ import Stack from "./algo-stack.lit";
 import { name } from "./controls.lit";
 import { Action } from "./cell.lit";
 import { balanced_stack, Res } from "./algos/balanced_stack";
-import { colors, times } from "./common-animations";
+import { Color, colors, PointerId, times, XIndex } from "./common-animations";
+import { name as pointerName, Pointer } from "./pointer.lit";
+import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
+import { name as resultName, Result } from "./result.lit";
+import invariant from "tiny-invariant";
 
 console.log("register %O", name);
+console.log("register %O", pointerName);
+console.log("register %O", pointerRowName);
+console.log("register %O", resultName);
+
+type ResultOps = {
+  input: string;
+  ops: Op[];
+};
+
+// prettier-ignore
+type Op =
+  | { kind: "create"; color: Color; id: PointerId; left: XIndex; right: XIndex };
+
+const results: Record<string, ResultOps> = {
+  "3()[]": {
+    input: "3()[]",
+    ops: [],
+  },
+};
 
 export function init(input: string) {
   const algoInput = document.getElementById("algo-input") as Stack;
   const algoStack = document.getElementById("algo-stack") as Stack;
   const algoAction = document.getElementById("algo-action") as Action;
+  const algoRow = document.querySelector("algo-pointer-row") as PointerRow;
 
   const master = gsap.timeline();
 
@@ -20,11 +44,13 @@ export function init(input: string) {
     INPUT: algoInput,
     STACK: algoStack,
     ACTION: algoAction,
+    POINTER_ROW: algoRow,
   };
 
   const res = balanced_stack(input);
 
   algoInput.stack = input.split("");
+  algoRow.addRow({ id: "a" });
 
   const params: BalancedStack = {
     elems,
@@ -36,7 +62,12 @@ export function init(input: string) {
 }
 
 interface BalancedStack {
-  elems: { STACK: Stack; INPUT: Stack; ACTION: Action; POINTER: string };
+  elems: {
+    STACK: Stack;
+    INPUT: Stack;
+    ACTION: Action;
+    POINTER_ROW: PointerRow;
+  };
 }
 
 function pointer(res: Res, stack: BalancedStack) {
@@ -44,6 +75,9 @@ function pointer(res: Res, stack: BalancedStack) {
   const stackTimeline = gsap.timeline();
   const inputCells = stack.elems.INPUT.cells();
   const timeline = gsap.timeline();
+  const pointer = stack.elems.POINTER_ROW.byId("a");
+
+  invariant(pointer, "missing pointer");
 
   timeline.set(inputCells, { visibility: "visible" }).fromTo(
     inputCells,
@@ -58,17 +92,13 @@ function pointer(res: Res, stack: BalancedStack) {
   );
 
   timeline
-    .set(stack.elems.POINTER, { opacity: 1, visibility: "visible" })
-    .fromTo(
-      stack.elems.POINTER,
-      { scale: 0, duration: times.DURATION },
-      { scale: 1, duration: times.DURATION }
-    );
+    .set(pointer, { opacity: 1, visibility: "visible" })
+    .fromTo(pointer, { scale: 0, duration: times.DURATION }, { scale: 1, duration: times.DURATION });
 
   values.forEach((val, index) => {
     const op = val.ops[0];
     timeline
-      .to(stack.elems.POINTER, {
+      .to(pointer, {
         translateX: val.index * 40,
         duration: times.DURATION,
         delay: index > 0 ? times.DURATION : 0,

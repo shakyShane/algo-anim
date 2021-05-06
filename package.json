@@ -16,6 +16,7 @@
     "gsap": "^3.6.1",
     "lit": "^2.0.0-rc.1",
     "morphdom": "^2.6.1",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "tiny-invariant": "^1.1.0"
   }
 }

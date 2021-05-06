@@ -1,4 +1,4 @@
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { Pointer } from "./pointer.lit";
 
@@ -52,12 +52,17 @@ export class PointerRow extends LitElement {
     return undefined;
   }
 
+  @property({ type: String })
+  direction: "up" | "down" = "down";
+
   /**
    * Output of this component
    */
   render() {
     return html`<div class="wrap">
-      ${this.rows.map((_, index) => html`<algo-pointer direction="up" data-index=${index}></algo-pointer>`)}
+      ${this.rows.map(
+        (_, index) => html`<algo-pointer direction=${this.direction} data-index=${index}></algo-pointer>`
+      )}
     </div> `;
   }
 }

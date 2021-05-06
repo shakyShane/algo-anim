@@ -1,6 +1,18 @@
 import Timeline = gsap.core.Timeline;
 import TweenTarget = gsap.TweenTarget;
 
+export type PointerId = string;
+export type XIndex = number;
+
+export enum Color {
+  white = "white",
+  red = "red",
+  orange = "orange",
+  yellow = "yellow",
+  pink = "pink",
+  lightgreen = "lightgreen",
+}
+
 export const colors = {
   SELECTED: "#aed049",
   GREEN: "#aed049",

@@ -6,25 +6,13 @@ import { name as pointerName, Pointer } from "./pointer.lit";
 import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
 import { name as resultName, Result } from "./result.lit";
 import { Action } from "./cell.lit";
-import { bounceInputIn, fadeInPointer, showPointer, times } from "./common-animations";
+import { bounceInputIn, Color, fadeInPointer, PointerId, showPointer, times, XIndex } from "./common-animations";
 import { balanced_recursive } from "./algos/balanced_recursive";
 
 console.log("register %O", name);
 console.log("register %O", pointerName);
 console.log("register %O", pointerRowName);
 console.log("register %O", resultName);
-
-type PointerId = string;
-type XIndex = number;
-
-enum Color {
-  white = "white",
-  red = "red",
-  orange = "orange",
-  yellow = "yellow",
-  pink = "pink",
-  lightgreen = "lightgreen",
-}
 
 type ResultOps = {
   input: string;
