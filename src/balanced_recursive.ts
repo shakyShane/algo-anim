@@ -1,11 +1,10 @@
 import { gsap } from "gsap";
 import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
-import { name } from "./controls.lit";
-import { name as pointerName, Pointer } from "./pointer.lit";
-import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
-import { name as resultName, Result } from "./result.lit";
-import { Action } from "./cell.lit";
+import { name } from "./algo-controls.lit";
+import { name as pointerName, Pointer } from "./algo-pointer.lit";
+import { name as pointerRowName, PointerRow } from "./algo-pointer-row.lit";
+import { name as resultName, Result } from "./algo-result.lit";
 import { bounceInputIn, Color, fadeInPointer, PointerId, showPointer, times, XIndex } from "./common-animations";
 import { balanced_recursive } from "./algos/balanced_recursive";
 
@@ -193,70 +192,53 @@ function process(op: Op, params: BalancedStack) {
   }
 }
 
-export function init(input: string) {
+export function init(input: string, elements: Elems, timeline: gsap.core.Timeline) {
   const res = results[input];
   if (!res) throw new Error("input not found");
-  const algoAction = document.getElementById("algo-action") as Action;
-  const algoRow = document.querySelector("algo-pointer-row") as PointerRow;
-  const algoInput = document.querySelector("algo-stack") as Stack;
-  const algoResult = document.querySelector("algo-result") as Result;
-  const master = gsap.timeline();
 
   const res1 = balanced_recursive(input);
 
-  algoResult.prefix = "Balanced";
-  algoResult.result = res1;
-  algoInput.fromStr(input);
+  elements.RESULT.prefix = "Balanced";
+  elements.RESULT.result = res1;
+  elements.INPUT.fromStr(input);
 
   res.ops.forEach((op) => {
     switch (op.kind) {
       case "create": {
-        algoRow.addRow({ id: `${op.id}-left` });
-        algoRow.addRow({ id: `${op.id}-right` });
+        elements.POINTER_ROW.addRow({ id: `${op.id}-left` });
+        elements.POINTER_ROW.addRow({ id: `${op.id}-right` });
       }
     }
   });
 
   setTimeout(() => {
     const params: BalancedStack = {
-      elems: {
-        INPUT: algoInput,
-        ACTION: algoAction,
-        POINTER_ROW: algoRow,
-        RESULT: algoResult,
-      },
+      elems: elements,
       pointers: (id) => {
         return {
-          left: algoRow.byId(`${id}-left`)!,
-          right: algoRow.byId(`${id}-right`)!,
+          left: elements.POINTER_ROW.byId(`${id}-left`)!,
+          right: elements.POINTER_ROW.byId(`${id}-right`)!,
         };
       },
-      timelines: { main: gsap.timeline({ defaults: { duration: times.DURATION * 2 } }) },
+      timelines: { main: timeline },
     };
-    master.add(timeline(res.ops, params));
+    bounceInputIn(timeline, params.elems.INPUT.cells());
+    res.ops.forEach((op) => {
+      process(op, params);
+    });
   }, 0);
 }
 
+interface Elems {
+  INPUT: Stack;
+  POINTER_ROW: PointerRow;
+  RESULT: Result;
+}
+
 interface BalancedStack {
-  elems: {
-    INPUT: Stack;
-    ACTION: Action;
-    POINTER_ROW: PointerRow;
-    RESULT: Result;
-  };
+  elems: Elems;
   pointers: (id: string) => { left: Pointer; right: Pointer };
   timelines: {
     main: gsap.core.Timeline;
   };
-}
-
-function timeline(ops: Op[], params: BalancedStack) {
-  const { main } = params.timelines;
-  // console.log(ops);
-  bounceInputIn(main, params.elems.INPUT.cells());
-  ops.forEach((op) => {
-    process(op, params);
-  });
-  // pointer(res, params);
-  return main;
 }

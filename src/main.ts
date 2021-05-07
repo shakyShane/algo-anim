@@ -1,5 +1,7 @@
 import "./style.css";
-import { init } from "./balanced_stack";
+import { name as balancedName } from "./algo-balanced.lit";
+console.log("register %O", balancedName);
+// import { init } from "./balanced_stack";
 // import { init } from "./balanced_recursive";
 // init("(1+2)");
 // init("3()[]");
@@ -7,4 +9,4 @@ import { init } from "./balanced_stack";
 // init("~([{}])~");
 // init("([{123}])");
 // init("12(1+2");
-init("([})");
+// init("([})");

@@ -1,6 +1,6 @@
 import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
-import { Cell, name } from "./cell.lit";
+import { Cell, name } from "./algo-cell.lit";
 
 console.log("register %O", name);
 

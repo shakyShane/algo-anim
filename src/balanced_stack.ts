@@ -1,13 +1,12 @@
 import { gsap } from "gsap";
 import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
-import { name } from "./controls.lit";
-import { Action } from "./cell.lit";
+import { name } from "./algo-controls.lit";
 import { balanced_stack } from "./algos/balanced_stack";
 import { bounceInputIn, Color, fadeInPointer, PointerId, showPointer, times, XIndex } from "./common-animations";
-import { name as pointerName, Pointer } from "./pointer.lit";
-import { name as pointerRowName, PointerRow } from "./pointer-row.lit";
-import { name as resultName, Result } from "./result.lit";
+import { name as pointerName, Pointer } from "./algo-pointer.lit";
+import { name as pointerRowName, PointerRow } from "./algo-pointer-row.lit";
+import { name as resultName, Result } from "./algo-result.lit";
 import invariant from "tiny-invariant";
 
 console.log("register %O", name);
@@ -90,15 +89,13 @@ const results: Record<string, ResultOps> = {
 
 export function init(input: string) {
   const res = results[input];
-  if (!res) throw new Error("input not found");
+  invariant(res, "not matching ops found");
   const algoInput = document.getElementById("algo-input") as Stack;
   const algoStack = document.getElementById("algo-stack") as Stack;
-  const algoAction = document.getElementById("algo-action") as Action;
   const algoRow = document.querySelector("algo-pointer-row") as PointerRow;
   const algoResult = document.querySelector("algo-result") as Result;
 
   const master = gsap.timeline();
-
   const res1 = balanced_stack(input);
   algoResult.result = res1.result;
   algoResult.prefix = "Balanced";
@@ -118,7 +115,6 @@ export function init(input: string) {
     elems: {
       INPUT: algoInput,
       STACK: algoStack,
-      ACTION: algoAction,
       POINTER_ROW: algoRow,
       RESULT: algoResult,
     },
@@ -140,7 +136,6 @@ interface BalancedStack {
   elems: {
     INPUT: Stack;
     STACK: Stack;
-    ACTION: Action;
     POINTER_ROW: PointerRow;
     RESULT: Result;
   };

@@ -1,6 +1,6 @@
 import { customElement, property, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
-import { Pointer } from "./pointer.lit";
+import { Pointer } from "./algo-pointer.lit";
 
 type Row = { id: string };
 
@@ -60,9 +60,9 @@ export class PointerRow extends LitElement {
    */
   render() {
     return html`<div class="wrap">
-      ${this.rows.map(
-        (_, index) => html`<algo-pointer direction=${this.direction} data-index=${index}></algo-pointer>`
-      )}
+      ${this.rows.map((row, index) => {
+        return html`<algo-pointer direction=${this.direction} data-id=${row.id} data-index=${index}></algo-pointer>`;
+      })}
     </div> `;
   }
 }

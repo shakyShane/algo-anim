@@ -1,4 +1,4 @@
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 
 @customElement("algo-controls")
@@ -13,14 +13,23 @@ export class Controls extends LitElement {
     }
   `;
 
+  @property()
+  pause: () => void = () => {};
+
+  @property()
+  play: () => void = () => {};
+
+  @property()
+  restart: () => void = () => {};
+
   /**
    * Output of this component
    */
   render() {
     return html` <div>
-      <button type="submit" onClick="__play()">Play</button>
-      <button type="submit" onClick="__pause()">Pause</button>
-      <button type="submit" onClick="__restart()">Restart</button>
+      <button type="submit" @click=${this.play}>Play</button>
+      <button type="submit" @click=${this.pause}>Pause</button>
+      <button type="submit" @click=${this.restart}>Restart</button>
     </div>`;
   }
 }
