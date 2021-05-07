@@ -1,11 +1,10 @@
-import { gsap } from "gsap";
 import "./algo-stack.lit";
 import Stack from "./algo-stack.lit";
 import { name } from "./algo-controls.lit";
 import { name as pointerName, Pointer } from "./algo-pointer.lit";
 import { name as pointerRowName, PointerRow } from "./algo-pointer-row.lit";
 import { name as resultName, Result } from "./algo-result.lit";
-import { bounceInputIn, Color, fadeInPointer, PointerId, showPointer, times, XIndex } from "./common-animations";
+import { bounceInputIn, Color, fadeInPointer, PointerId, showPointer, XIndex } from "./common-animations";
 import { balanced_recursive } from "./algos/balanced_recursive";
 
 console.log("register %O", name);

@@ -1,50 +1,22 @@
 import { customElement, property, state } from "lit/decorators.js";
 import { createRef, ref } from "lit/directives/ref.js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import invariant from "tiny-invariant";
 import Stack from "./algo-stack.lit";
 import { Result } from "./algo-result.lit";
-import { init } from "./balanced_recursive";
+import { init } from "./balanced_stack";
 import { PointerRow } from "./algo-pointer-row.lit";
 import { gsap } from "gsap";
 import { times } from "./common-animations";
+import { layout } from "./common-styles.lit";
 
-@customElement("algo-balanced-recursive")
-export class BalancedRecursive extends LitElement {
-  static styles = css`
-    :host {
-    }
-    .row {
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-    .gap {
-      margin-top: 20px;
-    }
-    .preview {
-      line-height: 40px;
-      font-size: 0.8em;
-      font-family: monospace;
-    }
-    .row-height {
-      display: block;
-      height: 40px;
-      position: relative;
-    }
-    .prefix {
-      line-height: 40px;
-      font-size: 0.8em;
-      font-family: monospace;
-    }
-    algo-result {
-      opacity: 0;
-      visibility: hidden;
-    }
-  `;
+@customElement("algo-balanced-stack")
+export class BalancedStack extends LitElement {
+  static styles = [layout];
 
   pointerRowRef = createRef<PointerRow>();
   inputRef = createRef<Stack>();
+  stackRef = createRef<Stack>();
   resultRef = createRef<Result>();
 
   @property({ type: String })
@@ -56,6 +28,7 @@ export class BalancedRecursive extends LitElement {
   firstUpdated() {
     invariant(this.pointerRowRef.value, "this.pointerRowRef.value");
     invariant(this.inputRef.value, "this.inputRef.value");
+    invariant(this.stackRef.value, "this.stackRef.value");
     invariant(this.resultRef.value, "this.resultRef.value");
     init(
       this.input,
@@ -63,6 +36,7 @@ export class BalancedRecursive extends LitElement {
         INPUT: this.inputRef.value,
         POINTER_ROW: this.pointerRowRef.value,
         RESULT: this.resultRef.value,
+        STACK: this.stackRef.value,
       },
       this.timeline
     );
@@ -88,10 +62,14 @@ export class BalancedRecursive extends LitElement {
         </div>
       </div>
       <div class="row gap">
+        <span class="prefix">Stack:</span>
+        <algo-stack ${ref(this.stackRef)}></algo-stack>
+      </div>
+      <div class="row gap">
         <algo-result ${ref(this.resultRef)}></algo-result>
       </div>
     `;
   }
 }
 
-export const name = "BalancedRecursive";
+export const name = "BalancedStack";

@@ -1,6 +1,8 @@
 import "./style.css";
-import { name as balancedName } from "./algo-balanced.lit";
+import { name as balancedName } from "./algo-balanced-recursive.lit";
+import { name as stackName } from "./algo-balanced-stack.lit";
 console.log("register %O", balancedName);
+console.log("register %O", stackName);
 // import { init } from "./balanced_stack";
 // import { init } from "./balanced_recursive";
 // init("(1+2)");
